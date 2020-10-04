@@ -1,3 +1,3 @@
-# TimeTable2Header
+# PronoteBot
 
-Converts an ODF school timetable to a c++ header to use with the omega agenda app (for numworks calculators). 
+Pronote bot to open pronote or to open the physics and chemistry book at a specified page
