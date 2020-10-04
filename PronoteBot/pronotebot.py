@@ -11,8 +11,12 @@ def make_page(url, page):
     return ''.join(url[::-1].split("?")[1:])[::-1] + "?page=" + str(page)
 
 class PronoteBot():
-    def __init__(self):
-        self.driver = webdriver.Firefox(firefox_profile='/home/scott/.mozilla/firefox/hrgxfoc4.default-release')
+    def __init__(self, firefox_profile=None):
+        if firefox_profile != None:
+            print("[log] Using Firefox Profile : `"+firefox_profile+"`")
+            self.driver = webdriver.Firefox(firefox_profile=firefox_profile)
+        else:
+            self.driver = webdriver.Firefox()
         self.driver.fullscreen_window()
 
     def start(self, page_number, username, password):
