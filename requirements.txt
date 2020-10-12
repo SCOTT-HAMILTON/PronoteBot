@@ -1,3 +1,5 @@
 click
-selenium
+pyautogui
 pybase64
+selenium
+wget

@@ -7,7 +7,7 @@ setup(
     include_package_data=True,
     py_modules = [ 'pronotebot', 'cli' ],
 
-    install_requires=['selenium', 'pybase64', 'Click'],
+    install_requires=['selenium', 'pybase64', 'Click', 'pyautogui', 'wget'],
 
     entry_points='''
         [console_scripts]
