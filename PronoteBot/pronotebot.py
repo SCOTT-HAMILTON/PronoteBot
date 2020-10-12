@@ -2,7 +2,12 @@
 
 from base64 import b64decode
 from selenium import webdriver
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver import ActionChains
 from time import sleep
+from wget import download as wget_download
+import pyautogui
+
 
 driver_path = "/usr/bin/chromedriver"
 brave_path = "/usr/bin/brave"
@@ -19,7 +24,7 @@ class PronoteBot():
             self.driver = webdriver.Firefox()
         self.driver.fullscreen_window()
 
-    def start(self, page_number, username, password):
+    def start(self, username, password, page_number=None, download=False):
         self.driver.get('https://0752539c.index-education.net/pronote/eleve.html')
 
         sleep(1)
@@ -33,9 +38,9 @@ class PronoteBot():
         print("[log] Clicking on connect")
         title='Cliquez sur le bouton "Se connecter".'
         self.driver.find_element_by_css_selector("[title^='"+title+"']").click()
+        sleep(2)
 
         if page_number != None:
-            sleep(2)
             # Connected to pronote
             print("[log] Clicking on physique-chimie book")
             content='Physique chimie 1re, éd. 2019 - Manuel numérique PREMIUM élève'
@@ -61,11 +66,58 @@ class PronoteBot():
                 self.driver.get(page)
                 # self.driver.execute_script('window.open("'+page+'")')
 
-            # sleep(3)
-            # # Clicking on download button
-            # for b in self.driver.find_elements_by_tag_name("button"):
-            #     if ("oneclick" in b.get_attribute("class")):
-            #         print(b.get_attribute("class"))
-            #         b.click()
-            #         break
+        if download:
+            # Clicking on Vie Scolaire
+            for b in self.driver.find_elements_by_tag_name("div"):
+                try:
+                    attr_id = b.get_attribute("id")
+                except:
+                    print("Invalid div, skipping...")
+                if attr_id[::-1][:6][::-1] == 'Combo5':
+                    print("Found : `"+attr_id+"`")
+                    b.click()
+                    sleep(1)
+                    ActionChains(self.driver).move_to_element_with_offset(b, 200, 0).perform()
+                    sleep(1)
+                    break
+
+            # Clicking on pdf
+            for b in self.driver.find_elements_by_tag_name("i"):
+                try:
+                    attr_id = b.get_attribute("id")
+                except:
+                    print("Invalid div, skipping...")
+                if attr_id[::-1][:6][::-1] == 'Bouton':
+                    print("Found : `"+attr_id+"`")
+                    screenWidth, screenHeight = pyautogui.size()
+                    pyautogui.moveTo(screenWidth-30, 90)
+                    pyautogui.click()
+                    sleep(1)
+                    break
+
+            # Fill download form
+            self.driver.find_elements_by_name("55_1_rbChoixAnnuel")[1].find_element_by_xpath("..").find_elements_by_tag_name("span")[0].click()
+            self.driver.find_elements_by_name("55_1_rbPortrait")[1].find_element_by_xpath("..").find_elements_by_tag_name("span")[0].click()
+            self.driver.find_elements_by_name("55_1_rbRenvois")[1].find_element_by_xpath("..").find_elements_by_tag_name("span")[0].click()
+            sleep(0.5)
+            for b in self.driver.find_elements_by_tag_name("button"):
+                try:
+                    attr_id = b.get_attribute("id")
+                except:
+                    print("Invalid div, skipping...")
+                if attr_id[::-1][:6][::-1] == 'btns_1':
+                    print("Found : `"+attr_id+"`")
+                    b.click()
+                    sleep(1)
+                    break
+
+            # Download pdf with direct link
+            self.driver.switch_to_window(self.driver.window_handles[1])
+            sleep(1)
+            while (current_url := self.driver.current_url) == 'about:blank':
+                print("Trying current url : `"+current_url+"`")
+                sleep(0.5)
+            print("current url : `"+current_url+"`")
+            filename = wget_download(current_url)
+            print("\nPdf downloaded at : `"+filename+"`")
 
