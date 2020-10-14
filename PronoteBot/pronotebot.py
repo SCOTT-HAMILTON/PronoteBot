@@ -114,9 +114,11 @@ class PronoteBot():
             # Download pdf with direct link
             self.driver.switch_to_window(self.driver.window_handles[1])
             sleep(1)
-            while (current_url := self.driver.current_url) == 'about:blank':
-                print("Trying current url : `"+current_url+"`")
+            current_url = self.driver.current_url
+            while current_url == 'about:blank':
                 sleep(0.5)
+                current_url = self.driver.current_url
+                print("Trying current url : `"+current_url+"`")
             print("current url : `"+current_url+"`")
             filename = wget_download(current_url)
             print("\nPdf downloaded at : `"+filename+"`")
