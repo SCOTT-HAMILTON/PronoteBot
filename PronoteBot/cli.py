@@ -23,6 +23,7 @@ class ChoiceMethodParamType(click.ParamType):
     name = "page=<page_number>|download"
 
     def convert(self, value, param, ctx):
+        print("converting...")
         tab = value.split("=")
         if value == 'download':
             return ChoiceMethod(Method.DOWNLOAD)
@@ -45,9 +46,11 @@ class ChoiceMethodParamType(click.ParamType):
             )
 
 @click.command()
-@click.option('-m', '--method', type=ChoiceMethodParamType())
+@click.option('-m', '--method', type=ChoiceMethodParamType(), required=True)
 def cli(method):
     """Pronote bot to open pronote or to open the physics and chemistry book at a specified page"""
+    if method == None:
+        return 1
     config_file = environ['HOME']+'/.config/pronotebot.conf'
     assert isfile(config_file)
     config = load(open(config_file, 'r'))
