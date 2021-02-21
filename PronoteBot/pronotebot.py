@@ -2,7 +2,7 @@
 
 from base64 import b64decode
 from selenium import webdriver
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver import ActionChains
 from time import sleep
 from wget import download as wget_download
@@ -26,12 +26,20 @@ class PronoteBot():
 
     def start(self, username, password, page_number=None, download=False):
         self.driver.get('https://0752539c.index-education.net/pronote/eleve.html')
-
-        sleep(1)
+        print("[log] Waiting")
+        # sleep(100)
+        print(f"username : `{username}`")
+        title="Saisissez votre identifiant."
+        while 1:
+            try:
+                username_entry = self.driver.find_element_by_css_selector("[title^='"+title+"']")
+            except NoSuchElementException:
+                sleep(1)
+                continue
+            break
 
         print("[log] Writing Username")
-        title="Saisissez votre identifiant."
-        self.driver.find_element_by_css_selector("[title^='"+title+"']").send_keys(username)
+        username_entry.send_keys(username)
         print("[log] Writing Password")
         title="Saisissez votre mot de passe."
         self.driver.find_element_by_css_selector("[title^='"+title+"']").send_keys(str(b64decode(password.encode("UTF-8")).decode("UTF-8")))
