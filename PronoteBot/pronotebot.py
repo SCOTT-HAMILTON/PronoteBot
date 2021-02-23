@@ -48,7 +48,7 @@ class PronoteBot():
         self.driver.find_element_by_css_selector("[title^='"+title+"']").click()
         sleep(2)
 
-        if page_number != None:
+        if page_number:
             # Connected to pronote
             print("[log] Clicking on physique-chimie book")
             content='Physique chimie 1re, éd. 2019 - Manuel numérique PREMIUM élève'

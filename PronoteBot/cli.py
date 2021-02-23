@@ -46,24 +46,25 @@ class ChoiceMethodParamType(click.ParamType):
             )
 
 @click.command()
-@click.option('-m', '--method', type=ChoiceMethodParamType(), required=True)
+@click.option('-m', '--method', type=ChoiceMethodParamType())
 def cli(method):
     """Pronote bot to open pronote or to open the physics and chemistry book at a specified page"""
-    if method == None:
-        return 1
     config_file = environ['HOME']+'/.config/pronotebot.conf'
-    assert isfile(config_file)
     config = load(open(config_file, 'r'))
-    page_number = None
-    download = False
-    if method.method == Method.DOWNLOAD:
-        download = True
-    elif method.method == Method.PAGE_NUMBER:
-        page_number = method.page_number
     if 'firefox_profile' in config.keys():
         path = expanduser(config['firefox_profile'])
         assert isdir(path)
         bot = PronoteBot(firefox_profile=path)
     else:
         bot = PronoteBot()
-    bot.start(config['username'], config['password'], page_number=page_number, download=download)
+    if method == None:
+        bot.start(config['username'], config['password'])
+    else:
+        assert isfile(config_file)
+        page_number = None
+        download = False
+        if method.method == Method.DOWNLOAD:
+            download = True
+        elif method.method == Method.PAGE_NUMBER:
+            page_number = method.page_number
+        bot.start(config['username'], config['password'], page_number=page_number, download=download)
